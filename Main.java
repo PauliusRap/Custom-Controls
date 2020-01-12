@@ -60,7 +60,7 @@ public class Main {
         Assay a = new Assay(nextLine);
         for (Assay assay : assayList) {
             if (nextLine.equals(assay.getAssayName()) || nextLine.equals(assay.getAssayID1()) || nextLine.equals(assay.getAssayID2()) || nextLine.equals(assay.getAssayID3()) || nextLine.equals(assay.getAssayID4())) {
-                a = new Assay(assay.getAssayID1());
+                a = assay;
             }
         }
         return a;
@@ -79,8 +79,14 @@ public class Main {
             workingInput.removeAll(entry.getValue());
             assaysCovered = input.size() - workingInput.size();
             overloadedAssays = entry.getValue().size() - assaysCovered;
-            if (assaysCovered > topCoverage && overloadedAssays < bestOverload) {
+            if (assaysCovered >= topCoverage) {
                 bestMatch = entry.getKey();
+                if (assaysCovered == topCoverage && overloadedAssays < bestOverload) {
+                    bestMatch = entry.getKey();
+                    topCoverage = assaysCovered;
+                    bestOverload = overloadedAssays;
+                    continue;
+                }
                 topCoverage = assaysCovered;
                 bestOverload = overloadedAssays;
             }
@@ -97,7 +103,7 @@ public class Main {
     public static void main(String[] args) {
         // write your code here
         System.out.println("+---------------------------------------------------------+");
-        System.out.println("|    Custom DNA Control Template Creator, version 1.01    |");
+        System.out.println("|    Custom DNA Control Template Creator, version 1.02    |");
         System.out.println("+---------------------------------------------------------+");
 
         long startLoadTime = System.currentTimeMillis();
@@ -163,13 +169,23 @@ public class Main {
                         //Prints assays covered more than one times
                         System.out.println("Assays covered more than once:");
                         int duplexAssays = 0;
+                        System.out.printf("No | %-15s | %-15s | %-15s | %-15s | %-15s%n", "Assay ID1", "Assay ID2", "Assay ID3", "Assay ID4", "Times Covered");
                         for (Assay a : count.keySet()) {
                             if (count.get(a) > 1 && input.contains(a)) {
-                                System.out.print(a.getAssayID1() + ", " + count.get(a) + " times; ");
+                                //System.out.print(a.getAssayID1() + ", " + a.getAssayID2() + ", " + a.getAssayID3() + ", " + a.getAssayID3() + ", " + count.get(a) + " times;\n");
+                                System.out.printf("%-2d |", duplexAssays + 1);
+                                System.out.printf(" %-15s |", a.getAssayID1());
+                                if (a.getAssayID2() != null) System.out.printf(" %-15s |", a.getAssayID2());
+                                else System.out.print("                 |");
+                                if (a.getAssayID3() != null) System.out.printf(" %-15s |", a.getAssayID3());
+                                else System.out.print("                 |");
+                                if (a.getAssayID4() != null) System.out.printf(" %-15s |", a.getAssayID3());
+                                else System.out.print("                 |");
+                                System.out.println(" " + count.get(a) + " times");
                                 duplexAssays++;
-                                if (duplexAssays % 2 == 0) {
-                                    System.out.println();
-                                }
+//                                if (duplexAssays % 2 == 0) {
+//                                    System.out.println();
+//                                }
                             }
                         }
                         if (duplexAssays == 0) {
